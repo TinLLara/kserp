@@ -40,7 +40,7 @@
 	</form:form>
 	<sys:message content="${message}"/>
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
-		<thead>
+		<thead align="center">
 			<tr>
 				<th>部门名称</th>
 				<th>公函题目</th>
@@ -59,7 +59,7 @@
 					${oaIndoc.indocname}
 				</td>
 				<td>
-					${oaIndoc.indoccdate}
+					<fmt:formatDate value="${oaIndoc.indoccdate}" pattern="yyyy-MM-dd"/>
 				</td>
 				<td>
 					${fns:getDictLabel(oaIndoc.indocnextop, 'flowstatus', '')}

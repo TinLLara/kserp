@@ -59,7 +59,7 @@
 					${oaIndoc.indocname}
 				</td>
 				<td>
-					${oaIndoc.indoccdate}
+					<fmt:formatDate value="${oaIndoc.indoccdate}" pattern="yyyy-MM-dd"/>
 				</td>
 				<td>
 					${fns:getDictLabel(oaIndoc.indocnextop, 'flowstatus', '')}

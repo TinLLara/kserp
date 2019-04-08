@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szcxsl.oa.modules.oaindoc.dao.OaIndocDao">
+    
+	<sql id="oaIndocColumns">
+		a.indocid AS "indocid",
+		a.indoccode AS "indoccode",
+		a.indocname AS "indocname",
+		a.indocproject AS "indocproject",
+		a.indocevent AS "indocevent",
+		date_format(a.indoccdate,'%Y-%m-%d') AS "indoccdate",
+		a.indoccreator AS "indoccreator",
+		a.indocmobile AS "indocmobile",
+		a.indocsec AS "indocsec",
+		a.indocstate AS "indocstate",
+		a.indocattach AS "indocattach",
+		a.indoccontent AS "indoccontent",
+		a.indocadvice AS "indocadvice",
+		a.indocnextop AS "indocnextop",
+		a.indocnextoper AS "indocnextoper",
+		a.indocmailcopier AS "indocmailcopier"
+	</sql>
+	
+	<sql id="oaIndocCheckColumns">
+		a.indocid AS "indocid",
+		a.indoccode AS "indoccode",
+		a.indocname AS "indocname",
+		a.indocproject AS "indocproject",
+		a.indocevent AS "indocevent",
+		date_format(a.indoccdate,’%Y-%m-%d’) AS "indoccdate",
+		a.indoccreator AS "indoccreator",
+		a.indocmobile AS "indocmobile",
+		a.indocsec AS "indocsec",
+		a.indocstate AS "indocstate",
+		a.indocattach AS "indocattach",
+		a.indoccontent AS "indoccontent",
+		a.indocadvice AS "indocadvice",
+		f.flow_state AS "indocnextop",
+		a.indocnextoper AS "indocnextoper",
+		a.indocmailcopier AS "indocmailcopier"
+	</sql>
+	
+	<sql id="oaIndocJoins">
+	</sql>
+	
+	<sql id="oaIndocCheckJoins">
+		left join oa_flow f on a.indocid=f.relation_id
+	</sql>
+    
+	<select id="get" resultType="OaIndoc">
+		SELECT 
+			<include refid="oaIndocColumns"/>
+		FROM oa_indoc a
+		<include refid="oaIndocJoins"/>
+		WHERE a.indocid = #{indocid}
+	</select>
+	
+	<select id="findList" resultType="OaIndoc">
+		SELECT 
+			<include refid="oaIndocColumns"/>
+		FROM oa_indoc a
+		<include refid="oaIndocJoins"/>
+		<where>
+			a.indoccreator = #{currentUser.loginName}
+			<if test="indocname != null and indocname != ''">
+				AND a.indocname LIKE 
+					<if test="dbName == 'oracle'">'%'||#{indocname}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{indocname}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{indocname},'%')</if>
+			</if>
+			<if test="indocnextop != null and indocnextop != ''">
+				AND a.indocnextop = #{indocnextop}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OaIndoc">
+		SELECT 
+			<include refid="oaIndocColumns"/>
+		FROM oa_indoc a
+		<include refid="oaIndocJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findCheckIndocList" resultType="OaIndoc">
+		SELECT 
+			<include refid="oaIndocCheckColumns"/>
+		FROM oa_indoc a
+		<include refid="oaIndocCheckJoins"/>
+		<where>
+			f.operator = #{currentUser.loginName} and f.flow_type='nbgh' and (f.flow_state='authed' or f.flow_state='unauth' or f.flow_state='refuse')
+		</where>	
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO oa_indoc(
+			indocid,
+			indoccode,
+			indocname,
+			indocproject,
+			indocevent,
+			indoccdate,
+			indoccreator,
+			indocmobile,
+			indocsec,
+			indocstate,
+			indocattach,
+			indoccontent,
+			indocadvice,
+			indocnextop,
+			indocnextoper,
+			indocmailcopier
+		) VALUES (
+			#{indocid},
+			#{indoccode},
+			#{indocname},
+			#{indocproject},
+			#{indocevent},
+			#{indoccdate},
+			#{indoccreator},
+			#{indocmobile},
+			#{indocsec},
+			#{indocstate},
+			#{indocattach},
+			#{indoccontent},
+			#{indocadvice},
+			#{indocnextop},
+			#{indocnextoper},
+			#{indocmailcopier}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE oa_indoc SET 	
+			indocid = #{indocid},
+			indoccode = #{indoccode},
+			indocname = #{indocname},
+			indocproject = #{indocproject},
+			indocevent = #{indocevent},
+			indoccdate = #{indoccdate},
+			indoccreator = #{indoccreator},
+			indocmobile = #{indocmobile},
+			indocsec = #{indocsec},
+			indocstate = #{indocstate},
+			indocattach = #{indocattach},
+			indoccontent = #{indoccontent},
+			indocadvice = #{indocadvice},
+			indocnextop = #{indocnextop},
+			indocnextoper = #{indocnextoper},
+			indocmailcopier = #{indocmailcopier}
+		WHERE indocid = #{indocid}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM oa_indoc
+		WHERE indocid = #{indocid}
+	</update>
+	
+</mapper>

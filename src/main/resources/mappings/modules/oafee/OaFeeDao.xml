@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szcxsl.oa.modules.oafee.dao.OaFeeDao">
+    
+	<sql id="oaFeeColumns">
+		a.feeid AS "feeid",
+		a.applyperson AS "applyperson",
+		a.applytime AS "applytime",
+		a.belongdept AS "belongdept",
+		a.feebelongdept AS "feebelongdept",
+		a.proname AS "proname",
+		a.feecomment AS "feecomment",
+		a.sdate AS "sdate",
+		a.edate AS "edate",
+		a.saddr AS "saddr",
+		a.eaddr AS "eaddr",
+		a.tools AS "tools",
+		a.currency AS "currency",
+		a.planefee AS "planefee",
+		a.cityfee AS "cityfee",
+		a.livingfee AS "livingfee",
+		a.tripfee AS "tripfee",
+		a.otherfee AS "otherfee",
+		a.checkedcu AS "checkedcu",
+		a.checkedfee AS "checkedfee",
+		a.filecount AS "filecount",
+		a.triplist AS "triplist",
+		a.files AS "files",
+		a.state AS "state",
+		a.noticetag AS "noticetag",
+		a.joinedper AS "joinedper",
+		a.advancecash AS "advancecash",
+		a.feetype AS "feetype",
+		a.happentime AS "happentime",
+		a.oldatm AS "oldatm",
+		a.totalcash AS "totalcash",
+		a.totalcashzh AS "totalcashzh",
+		a.distancefee AS "distancefee",
+		a.feecat AS "feecat",
+		b.proname AS "projectid",
+		a.comeon AS "comeon",
+		a.other AS "other",
+		a.details AS "details",
+		a.eventid AS "eventid",
+		a.nextnoder AS "nextnoder"
+	</sql>
+	
+	<sql id="oaFeeCheckColumns">
+		a.feeid AS "feeid",
+		a.applyperson AS "applyperson",
+		a.applytime AS "applytime",
+		a.belongdept AS "belongdept",
+		a.feebelongdept AS "feebelongdept",
+		a.proname AS "proname",
+		a.feecomment AS "feecomment",
+		a.sdate AS "sdate",
+		a.edate AS "edate",
+		a.saddr AS "saddr",
+		a.eaddr AS "eaddr",
+		a.tools AS "tools",
+		a.currency AS "currency",
+		a.planefee AS "planefee",
+		a.cityfee AS "cityfee",
+		a.livingfee AS "livingfee",
+		a.tripfee AS "tripfee",
+		a.otherfee AS "otherfee",
+		a.checkedcu AS "checkedcu",
+		a.checkedfee AS "checkedfee",
+		a.filecount AS "filecount",
+		a.triplist AS "triplist",
+		a.files AS "files",
+		f.flow_state AS "state",
+		a.noticetag AS "noticetag",
+		a.joinedper AS "joinedper",
+		a.advancecash AS "advancecash",
+		a.feetype AS "feetype",
+		a.happentime AS "happentime",
+		a.oldatm AS "oldatm",
+		a.totalcash AS "totalcash",
+		a.totalcashzh AS "totalcashzh",
+		a.distancefee AS "distancefee",
+		a.feecat AS "feecat",
+		b.proname AS "projectid",
+		a.comeon AS "comeon",
+		a.other AS "other",
+		a.details AS "details",
+		a.eventid AS "eventid",
+		a.nextnoder AS "nextnoder"
+	</sql>
+	
+	<sql id="oaFeeJoins">
+		LEFT JOIN bus_project b ON a.projectid=b.projectid
+	</sql>
+	
+	<sql id="oaFeeCheckJoins">
+		LEFT JOIN bus_project b ON a.projectid=b.projectid left join oa_flow f on a.feeid=f.relation_id
+	</sql>
+    
+	<select id="get" resultType="OaFee">
+		SELECT 
+			<include refid="oaFeeColumns"/>
+		FROM oa_fee a
+		<include refid="oaFeeJoins"/>
+		WHERE a.feeid = #{feeid}
+	</select>
+	
+	<select id="findList" resultType="OaFee">
+		SELECT 
+			<include refid="oaFeeColumns"/>
+		FROM oa_fee a
+		<include refid="oaFeeJoins"/>
+		<where>
+			a.applyperson = #{currentUser.loginName} AND a.feecat=#{feecat} 
+			<!-- <if test="applyperson != null and applyperson != ''">
+				AND a.applyperson LIKE 
+					concat('%',#{applyperson},'.%')
+			</if> -->
+			<if test="beginApplytime != null and endApplytime != null and beginApplytime != '' and endApplytime != ''">
+				AND a.applytime BETWEEN #{beginApplytime} AND #{endApplytime}
+			</if>
+			<if test="state != null and state != ''">
+				AND a.state = #{state}
+			</if>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OaFee">
+		SELECT 
+			<include refid="oaFeeColumns"/>
+		FROM oa_fee a
+		<include refid="oaFeeJoins"/>
+		<where>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findCheckOafeeList" resultType="OaFee">
+		SELECT 
+			<include refid="oaFeeCheckColumns"/>
+		FROM oa_fee a
+		<include refid="oaFeeCheckJoins"/>
+		<where>
+			f.operator = #{currentUser.loginName} AND a.feecat=#{feecat} and f.flow_type='fybx' and (f.flow_state='authed' or f.flow_state='unauth' or f.flow_state='refuse')
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO oa_fee(
+			feeid,
+			applyperson,
+			applytime,
+			belongdept,
+			feebelongdept,
+			proname,
+			feecomment,
+			sdate,
+			edate,
+			saddr,
+			eaddr,
+			tools,
+			currency,
+			planefee,
+			cityfee,
+			livingfee,
+			tripfee,
+			otherfee,
+			checkedcu,
+			checkedfee,
+			filecount,
+			triplist,
+			files,
+			state,
+			noticetag,
+			joinedper,
+			advancecash,
+			feetype,
+			happentime,
+			oldatm,
+			totalcash,
+			totalcashzh,
+			distancefee,
+			feecat,
+			projectid,
+			comeon,
+			other,
+			details,
+			eventid,
+			nextnoder
+		) VALUES (
+			#{feeid},
+			#{applyperson},
+			#{applytime},
+			#{belongdept},
+			#{feebelongdept},
+			#{proname},
+			#{feecomment},
+			#{sdate},
+			#{edate},
+			#{saddr},
+			#{eaddr},
+			#{tools},
+			#{currency},
+			#{planefee},
+			#{cityfee},
+			#{livingfee},
+			#{tripfee},
+			#{otherfee},
+			#{checkedcu},
+			#{checkedfee},
+			#{filecount},
+			#{triplist},
+			#{files},
+			#{state},
+			#{noticetag},
+			#{joinedper},
+			#{advancecash},
+			#{feetype},
+			#{happentime},
+			#{oldatm},
+			#{totalcash},
+			#{totalcashzh},
+			#{distancefee},
+			#{feecat},
+			#{projectid},
+			#{comeon},
+			#{other},
+			#{details},
+			#{eventid},
+			#{nextnoder}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE oa_fee SET 	
+			feeid = #{feeid},
+			applyperson = #{applyperson},
+			applytime = #{applytime},
+			belongdept = #{belongdept},
+			feebelongdept = #{feebelongdept},
+			proname = #{proname},
+			feecomment = #{feecomment},
+			sdate = #{sdate},
+			edate = #{edate},
+			saddr = #{saddr},
+			eaddr = #{eaddr},
+			tools = #{tools},
+			currency = #{currency},
+			planefee = #{planefee},
+			cityfee = #{cityfee},
+			livingfee = #{livingfee},
+			tripfee = #{tripfee},
+			otherfee = #{otherfee},
+			checkedcu = #{checkedcu},
+			checkedfee = #{checkedfee},
+			filecount = #{filecount},
+			triplist = #{triplist},
+			files = #{files},
+			state = #{state},
+			noticetag = #{noticetag},
+			joinedper = #{joinedper},
+			advancecash = #{advancecash},
+			feetype = #{feetype},
+			happentime = #{happentime},
+			oldatm = #{oldatm},
+			totalcash = #{totalcash},
+			totalcashzh = #{totalcashzh},
+			distancefee = #{distancefee},
+			feecat = #{feecat},
+			projectid = #{projectid},
+			comeon = #{comeon},
+			other = #{other},
+			details = #{details},
+			eventid = #{eventid},
+			nextnoder = #{nextnoder}
+		WHERE feeid = #{feeid}
+	</update>
+	
+	<update id="delete">
+		delete from oa_fee 
+			WHERE feeid = #{feeid}
+	</update>
+	
+</mapper>

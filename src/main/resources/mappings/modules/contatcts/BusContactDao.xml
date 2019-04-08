@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szcxsl.oa.modules.contatcts.dao.BusContactDao">
+    
+	<sql id="busContactColumns">
+		a.contactid AS "contactid",
+		a.lastname AS "lastname",
+		a.fristname AS "fristname",
+		a.nativename AS "nativename",
+		a.engname AS "engname",
+		a.sex AS "sex",
+		a.email AS "email",
+		a.commutel AS "commutel",
+		a.commuphone AS "commuphone",
+		a.fax AS "fax",
+		a.website AS "website",
+		a.position AS "position",
+		a.city AS "city",
+		a.contacttype AS "contacttype",
+		a.addr AS "addr",
+		a.companyaddr AS "companyaddr",
+		a.note AS "note",
+		a.country AS "country"
+	</sql>
+	
+	<sql id="busContactJoins">
+	</sql>
+    
+	<select id="get" resultType="BusContact">
+		SELECT 
+			<include refid="busContactColumns"/>
+		FROM bus_contact a
+		<include refid="busContactJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BusContact">
+		SELECT 
+			<include refid="busContactColumns"/>
+		FROM bus_contact a
+		<include refid="busContactJoins"/>
+		<where>
+			
+			<if test="nativename != null and nativename != ''">
+				AND a.nativename LIKE 
+					<if test="dbName == 'oracle'">'%'||#{nativename}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{nativename}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{nativename},'%')</if>
+			</if>
+			<if test="addr != null and addr != ''">
+				AND a.addr LIKE 
+					<if test="dbName == 'oracle'">'%'||#{addr}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{addr}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{addr},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BusContact">
+		SELECT 
+			<include refid="busContactColumns"/>
+		FROM bus_contact a
+		<include refid="busContactJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bus_contact(
+			nativename,
+			engname,
+			sex,
+			email,
+			commutel,
+			commuphone,
+			fax,
+			website,
+			position,
+			city,
+			addr,
+			companyaddr,
+			note,
+			country
+		) VALUES (
+			#{nativename},
+			#{engname},
+			#{sex},
+			#{email},
+			#{commutel},
+			#{commuphone},
+			#{fax},
+			#{website},
+			#{position},
+			#{city},
+			#{addr},
+			#{companyaddr},
+			#{note},
+			#{country}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bus_contact SET 	
+			nativename = #{nativename},
+			engname = #{engname},
+			sex = #{sex},
+			email = #{email},
+			commutel = #{commutel},
+			commuphone = #{commuphone},
+			fax = #{fax},
+			website = #{website},
+			position = #{position},
+			city = #{city},
+			addr = #{addr},
+			companyaddr = #{companyaddr},
+			note = #{note},
+			country = #{country}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM bus_contact
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szcxsl.oa.modules.custormer.dao.BusCustomerDao">
+    
+	<sql id="busCustomerColumns">
+		a.customerid AS "customerid",
+		a.createtime AS "createtime",
+		a.creator AS "creator",
+		a.cname AS "cname",
+		a.ctype AS "ctype",
+		a.carea AS "carea",
+		a.address AS "address",
+		a.website AS "website",
+		a.ccomment AS "ccomment",
+		a.belongto AS "belongto",
+		a.telphone AS "telphone"
+	</sql>
+	
+	<sql id="busCustomerJoins">
+	</sql>
+    
+	<select id="get" resultType="BusCustomer">
+		SELECT 
+			<include refid="busCustomerColumns"/>
+		FROM bus_customer a
+		<include refid="busCustomerJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="BusCustomer">
+		SELECT 
+			<include refid="busCustomerColumns"/>
+		FROM bus_customer a
+		<include refid="busCustomerJoins"/>
+		<where>
+			
+			<if test="cname != null and cname != ''">
+				AND a.cname LIKE 
+					<if test="dbName == 'oracle'">'%'||#{cname}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{cname}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{cname},'%')</if>
+			</if>
+			<if test="ctype != null and ctype != ''">
+				AND a.ctype = #{ctype}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BusCustomer">
+		SELECT 
+			<include refid="busCustomerColumns"/>
+		FROM bus_customer a
+		<include refid="busCustomerJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bus_customer(
+			createtime,
+			creator,
+			cname,
+			ctype,
+			carea,
+			address,
+			website,
+			ccomment,
+			belongto,
+			telphone
+		) VALUES (
+			#{createtime},
+			#{creator},
+			#{cname},
+			#{ctype},
+			#{carea},
+			#{address},
+			#{website},
+			#{ccomment},
+			#{belongto},
+			#{telphone}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bus_customer SET 	
+			cname = #{cname},
+			ctype = #{ctype},
+			carea = #{carea},
+			address = #{address},
+			website = #{website},
+			ccomment = #{ccomment}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM bus_customer
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

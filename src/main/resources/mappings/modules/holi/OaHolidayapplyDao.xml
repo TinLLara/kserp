@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szcxsl.oa.modules.holi.dao.OaHolidayapplyDao">
+    
+	<sql id="oaHolidayapplyColumns">
+		a.happlyid AS "happlyid",
+		a.applyperson AS "applyperson",
+		a.applytime AS "applytime",
+		a.belongdept AS "belongdept",
+		a.staffnum AS "staffnum",
+		a.staffphone AS "staffphone",
+		a.stafftel AS "stafftel",
+		a.holidaytpye AS "holidaytpye",
+		a.starttime AS "starttime",
+		a.endtime AS "endtime",
+		a.starthour AS "starthour",
+		a.endhour AS "endhour",
+		a.days AS "days",
+		a.reason AS "reason",
+		a.holidayfile AS "holidayfile",
+		a.nextnode AS "nextnode",
+		a.nextnoder AS "nextnoder",
+		a.sendto AS "sendto",
+		a.yholiday AS "yholiday",
+		a.yused AS "yused",
+		a.iholiday AS "iholiday",
+		a.iused AS "iused",
+		a.oused AS "oused"
+	</sql>
+	
+	<sql id="oaHolidayapplyCheckColumns">
+		a.happlyid AS "happlyid",
+		a.applyperson AS "applyperson",
+		a.applytime AS "applytime",
+		a.belongdept AS "belongdept",
+		a.staffnum AS "staffnum",
+		a.staffphone AS "staffphone",
+		a.stafftel AS "stafftel",
+		a.holidaytpye AS "holidaytpye",
+		a.starttime AS "starttime",
+		a.endtime AS "endtime",
+		a.starthour AS "starthour",
+		a.endhour AS "endhour",
+		a.days AS "days",
+		a.reason AS "reason",
+		a.holidayfile AS "holidayfile",
+		f.flow_state AS "nextnode",
+		a.nextnoder AS "nextnoder",
+		a.sendto AS "sendto",
+		a.yholiday AS "yholiday",
+		a.yused AS "yused",
+		a.iholiday AS "iholiday",
+		a.iused AS "iused",
+		a.oused AS "oused"
+	</sql>
+	
+	<sql id="oaHolidayapplyJoins">
+	</sql>
+	
+	<sql id="oaHolidayapplyCheckJoins">
+		left join oa_flow f on a.happlyid=f.relation_id
+	</sql>
+    
+	<select id="get" resultType="OaHolidayapply">
+		SELECT 
+			<include refid="oaHolidayapplyColumns"/>
+		FROM oa_holidayapply a
+		<include refid="oaHolidayapplyJoins"/>
+		WHERE a.happlyid = #{happlyid}
+	</select>
+	
+	<select id="findList" resultType="OaHolidayapply">
+		SELECT 
+			<include refid="oaHolidayapplyColumns"/>
+		FROM oa_holidayapply a
+		<include refid="oaHolidayapplyJoins"/>
+		<where>
+			a.applyperson = #{currentUser.loginName}
+			<if test="beginApplytime != null and endApplytime != null and beginApplytime != '' and endApplytime != ''">
+				AND a.applytime BETWEEN #{beginApplytime} AND #{endApplytime}
+			</if>
+			<if test="holidaytpye != null and holidaytpye != ''">
+				AND a.holidaytpye = #{holidaytpye}
+			</if>
+			<if test="nextnode != null and nextnode != ''">
+				AND a.nextnode = #{nextnode}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OaHolidayapply">
+		SELECT 
+			<include refid="oaHolidayapplyColumns"/>
+		FROM oa_holidayapply a
+		<include refid="oaHolidayapplyJoins"/>
+		<where>
+			<!--a.del_flag = #{DEL_FLAG_NORMAL}-->
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findCheckList" resultType="OaHolidayapply">
+		SELECT 
+			<include refid="oaHolidayapplyCheckColumns"/>
+		FROM oa_holidayapply a
+		<include refid="oaHolidayapplyCheckJoins"/>
+		<where>
+			f.operator = #{currentUser.loginName} and f.flow_type='xjsq' and (f.flow_state='authed' or f.flow_state='unauth' or f.flow_state='refuse')
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO oa_holidayapply(
+			happlyid,
+			applyperson,
+			applytime,
+			belongdept,
+			staffnum,
+			staffphone,
+			stafftel,
+			holidaytpye,
+			starttime,
+			endtime,
+			starthour,
+			endhour,
+			days,
+			reason,
+			holidayfile,
+			nextnode,
+			nextnoder,
+			sendto,
+			yholiday
+		) VALUES (
+			#{happlyid},
+			#{applyperson},
+			#{applytime},
+			#{belongdept},
+			#{staffnum},
+			#{staffphone},
+			#{stafftel},
+			#{holidaytpye},
+			#{starttime},
+			#{endtime},
+			#{starthour},
+			#{endhour},
+			#{days},
+			#{reason},
+			#{holidayfile},
+			#{nextnode},
+			#{nextnoder},
+			#{sendto},
+			#{yholiday}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE oa_holidayapply SET 	
+			
+			applyperson = #{applyperson},
+			applytime = #{applytime},
+			belongdept = #{belongdept},
+			staffnum = #{staffnum},
+			staffphone = #{staffphone},
+			stafftel = #{stafftel},
+			holidaytpye = #{holidaytpye},
+			starttime = #{starttime},
+			endtime = #{endtime},
+			starthour = #{starthour},
+			endhour = #{endhour},
+			days = #{days},
+			reason = #{reason},
+			holidayfile = #{holidayfile},
+			nextnode = #{nextnode},
+			nextnoder = #{nextnoder},
+			sendto = #{sendto},
+			yholiday = #{yholiday}
+		WHERE happlyid = #{happlyid}
+	</update>
+	
+	<!-- <update id="delete">
+		UPDATE oa_holidayapply SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE happlyid = #{id}
+	</update> -->
+	
+	<delete id="delete">
+		DELETE FROM oa_holidayapply 
+		WHERE happlyid = #{happlyid}
+	</delete>
+	
+	<!-- 
+		审批拒绝时 调用checkToAdd11与checkToUpdate1
+		通过分两种情况：
+		1、未结束 checkToAdd1 与 checkToAdd2
+		2、结束 checkToAdd1 checkToAdd2 checkToUpdate1
+	-->
+	<!-- 审批通过时 修改流程状态为‘已审批’ 进入下一节点或终点 调用 checkToAdd2-->
+	<update id="checkToAdd1">
+		update oa_flow set 
+			over_time=#{overtime},
+			flow_state='authed',
+			remark=#{remark} 
+		where operator=#{loginName} 
+			and flow_state='unauth'
+			and relation_id=#{id};
+	</update>
+	
+	<!-- 审批拒绝时 修改流程状态为‘拒绝’ -->
+	<update id="checkToAdd11">
+		update oa_flow set 
+			over_time=#{overtime},
+			flow_state='refuse',
+			remark=#{remark} 
+		where operator=#{loginName} 
+			and relation_id=#{id};
+	</update>
+	
+	<!-- 审批通过时 新增的流程记录 可以为下一流程节点或终点 -->
+	<insert id="checkToAdd2">
+		insert into oa_flow(
+			id,
+			flow_type,
+			relation_id,
+			create_time,
+			over_time,
+			operator,
+			flow_state,
+			remark,
+			copy,
+			recall			
+			)values(
+			#{oaflowid},
+			#{flowtype},
+			#{id},
+			#{createtime},
+			#{overtime},
+			#{loginName},
+			#{flowstate},
+			'',
+			'',
+			''
+			) 
+	</insert>
+	
+	<!-- 审批结束时 修改申请记录的状态 -->
+	<update id="checkToUpdate1" statementType="STATEMENT">
+		UPDATE ${table} SET 
+			${status} = ${nextnode}
+		WHERE ${tabid} = ${id}
+	</update>
+	
+	<!-- 增加申请时 写入流程 -->
+	<insert id="insertFlow">
+		insert into oa_flow(
+			id,
+			flow_type,
+			relation_id,
+			create_time,
+			over_time,
+			operator,
+			flow_state,
+			remark,
+			copy,
+			recall			
+			)values(
+			#{oaflowid},
+			#{flowtype},
+			#{id},
+			#{createtime},
+			#{overtime},
+			#{loginName},
+			#{flowstate},
+			#{remark},
+			#{coper},
+			''
+			) 
+	</insert>
+	
+</mapper>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szcxsl.oa.modules.oaflow.dao.oaflow.OaFlowDao">
+    
+	<sql id="oaFlowColumns">
+		a.id AS "id",
+		a.flow_type AS "flowType",
+		a.relation_id AS "relationId",
+		a.create_time AS "createTime",
+		a.over_time AS "overTime",
+		a.operator AS "operator",
+		a.flow_state AS "flowState",
+		a.remark AS "remark",
+		a.copy AS "copy",
+		a.recall AS "recall"
+	</sql>
+	
+	<sql id="oaFlowJoins">
+	</sql>
+    
+	<select id="get" resultType="OaFlow">
+		SELECT 
+			<include refid="oaFlowColumns"/>
+		FROM oa_flow a
+		<include refid="oaFlowJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OaFlow">
+		SELECT 
+			<include refid="oaFlowColumns"/>
+		FROM oa_flow a
+		<include refid="oaFlowJoins"/>
+		<where>
+			a.relation_Id = #{relationId}
+		</where>
+			order by createTime
+	</select>
+	
+	<select id="findAllList" resultType="OaFlow">
+		SELECT 
+			<include refid="oaFlowColumns"/>
+		FROM oa_flow a
+		<include refid="oaFlowJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO oa_flow(
+			id,
+			flow_type,
+			relation_id,
+			create_time,
+			over_time,
+			operator,
+			flow_state,
+			remark,
+			copy,
+			recall
+		) VALUES (
+			#{id},
+			#{flowType},
+			#{relationId},
+			#{createTime},
+			#{overTime},
+			#{operator},
+			#{flowState},
+			#{remark},
+			#{copy},
+			#{recall}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE oa_flow SET 	
+			flow_type = #{flowType},
+			relation_id = #{relationId},
+			create_time = #{createTime},
+			over_time = #{overTime},
+			operator = #{operator},
+			flow_state = #{flowState},
+			remark = #{remark},
+			copy = #{copy},
+			recall = #{recall}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM oa_flow
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

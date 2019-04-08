@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szcxsl.oa.modules.oabustrip.dao.OaBusitripDao">
+    
+	<sql id="oaBusitripColumns">
+		a.tripnum AS "tripnum",
+		a.busitripid AS "busitripid",
+		a.applytime AS "applytime",
+		a.applyperson AS "applyperson",
+		a.belongdept AS "belongdept",
+		a.staffnum AS "staffnum",
+		a.startaddr AS "startaddr",
+		a.endaddr AS "endaddr",
+		a.startdate AS "startdate",
+		a.enddate AS "enddate",
+		a.tripdays AS "tripdays",
+		a.tripreason AS "tripreason",
+		a.currency AS "currency",
+		a.cashadvance AS "cashadvance",
+		a.cashadvancech AS "cashadvancech",
+		a.urgenttel AS "urgenttel",
+		a.tripfile AS "tripfile",
+		b.proname AS "relatedpro",
+		a.nextnode AS "nextnode",
+		a.nextnoder AS "nextnoder",
+		a.starthour AS "starthour",
+		a.endhour AS "endhour",
+		a.workhelper AS "workhelper",
+		a.contactstyle AS "contactstyle"
+		
+	</sql>
+	
+	<sql id="oaBusitripCheckColumns">
+		a.tripnum AS "tripnum",
+		a.busitripid AS "busitripid",
+		a.applytime AS "applytime",
+		a.applyperson AS "applyperson",
+		a.belongdept AS "belongdept",
+		a.staffnum AS "staffnum",
+		a.startaddr AS "startaddr",
+		a.endaddr AS "endaddr",
+		a.startdate AS "startdate",
+		a.enddate AS "enddate",
+		a.tripdays AS "tripdays",
+		a.tripreason AS "tripreason",
+		a.currency AS "currency",
+		a.cashadvance AS "cashadvance",
+		a.cashadvancech AS "cashadvancech",
+		a.urgenttel AS "urgenttel",
+		a.tripfile AS "tripfile",
+		b.proname AS "relatedpro",
+		f.flow_state AS "nextnode",
+		a.nextnoder AS "nextnoder",
+		a.starthour AS "starthour",
+		a.endhour AS "endhour",
+		a.workhelper AS "workhelper",
+		a.contactstyle AS "contactstyle"
+	</sql>
+	
+	<sql id="oaBusitripJoins">
+		LEFT JOIN bus_project b ON a.relatedpro=b.projectid
+	</sql>
+	
+	<sql id="oaBusitripCheckJoins">
+		LEFT JOIN bus_project b ON a.relatedpro=b.projectid left join oa_flow f on a.busitripid=f.relation_id
+	</sql>
+    
+	<select id="get" resultType="OaBusitrip">
+		SELECT 
+			<include refid="oaBusitripColumns"/>
+		FROM oa_busitrip a
+		<include refid="oaBusitripJoins"/>
+		WHERE a.busitripid = #{busitripid}
+	</select>
+	
+	<select id="findList" resultType="OaBusitrip">
+		SELECT 
+			<include refid="oaBusitripColumns"/>
+		FROM oa_busitrip a
+		<include refid="oaBusitripJoins"/>
+		<where>
+			<if test="beginApplytime != null and endApplytime != null and beginApplytime != '' and endApplytime != ''">
+				a.applyperson = #{currentUser.loginName} AND a.applytime BETWEEN #{beginApplytime} AND #{endApplytime}
+			</if>
+			<if test="(beginApplytime == null and endApplytime == null) or (beginApplytime == '' and endApplytime == '')">
+				a.applyperson = #{currentUser.loginName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findCheckTripList" resultType="OaBusitrip">
+		SELECT 
+			<include refid="oaBusitripCheckColumns"/>
+		FROM oa_busitrip a
+		<include refid="oaBusitripCheckJoins"/>
+		<where>
+			f.operator = #{currentUser.loginName} and f.flow_type='ccsq' and (f.flow_state='authed' or f.flow_state='unauth' or f.flow_state='refuse')
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OaBusitrip">
+		SELECT 
+			<include refid="oaBusitripColumns"/>
+		FROM oa_busitrip a
+		<include refid="oaBusitripJoins"/>
+		<where>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO oa_busitrip(
+			tripnum,
+			busitripid,
+			applytime,
+			applyperson,
+			belongdept,
+			staffnum,
+			startaddr,
+			endaddr,
+			startdate,
+			enddate,
+			tripdays,
+			tripreason,
+			currency,
+			cashadvance,
+			cashadvancech,
+			urgenttel,
+			tripfile,
+			relatedpro,
+			nextnode,
+			nextnoder,
+			starthour,
+			endhour,
+			workhelper,
+			contactstyle
+		) VALUES (
+			#{tripnum},
+			#{busitripid},
+			#{applytime},
+			#{applyperson},
+			#{belongdept},
+			#{staffnum},
+			#{startaddr},
+			#{endaddr},
+			#{startdate},
+			#{enddate},
+			#{tripdays},
+			#{tripreason},
+			#{currency},
+			#{cashadvance},
+			#{cashadvancech},
+			#{urgenttel},
+			#{tripfile},
+			#{relatedpro},
+			#{nextnode},
+			#{nextnoder},
+			#{starthour},
+			#{endhour},
+			#{workhelper},
+			#{contactstyle}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE oa_busitrip SET 	
+			tripnum = #{tripnum},
+			busitripid = #{busitripid},
+			applytime = #{applytime},
+			applyperson = #{applyperson},
+			belongdept = #{belongdept},
+			staffnum = #{staffnum},
+			startaddr = #{startaddr},
+			endaddr = #{endaddr},
+			startdate = #{startdate},
+			enddate = #{enddate},
+			tripdays = #{tripdays},
+			tripreason = #{tripreason},
+			currency = #{currency},
+			cashadvance = #{cashadvance},
+			cashadvancech = #{cashadvancech},
+			urgenttel = #{urgenttel},
+			tripfile = #{tripfile},
+			relatedpro = #{relatedpro},
+			nextnode = #{nextnode},
+			nextnoder = #{nextnoder},
+			starthour = #{starthour},
+			endhour = #{endhour},
+			workhelper = #{workhelper},
+			contactstyle = #{contactstyle}
+		WHERE busitripid = #{busitripid}
+	</update>
+	
+	<delete id="delete">
+		delete from oa_busitrip
+		WHERE busitripid = #{busitripid}
+	</delete>
+	
+	<!-- counts -->
+	<select id="findTripCount" resultType="long">
+		select count(1) from oa_busitrip where applyTime like CONCAT(#{year},'%')
+	</select>
+	
+</mapper>

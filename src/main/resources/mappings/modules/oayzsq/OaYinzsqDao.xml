@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szcxsl.oa.modules.oayzsq.dao.OaYinzsqDao">
+    
+	<sql id="oaYinzsqColumns">
+		a.id AS "id",
+		a.appname AS "appname",
+		a.appdate AS "appdate",
+		a.depart AS "depart",
+		a.yynum AS "yynum",
+		a.type AS "type",
+		c.compname AS "corpname",
+		a.fileormeno AS "fileormeno",
+		a.filename AS "filename",
+		a.fileid AS "fileid",
+		a.advice AS "advice",
+		a.mailcopier AS "mailcopier",
+		a.creator AS "creator",
+		a.creatdate AS "creatdate",
+		a.event AS "event",
+		b.proname AS "project",
+		a.nextop AS "nextop",
+		a.nextoper AS "nextoper",
+		a.comeon AS "comeon",
+		a.appresult AS "appresult"
+	</sql>
+	
+	<sql id="oaYinzsqCheckColumns">
+		a.id AS "id",
+		a.appname AS "appname",
+		a.appdate AS "appdate",
+		a.depart AS "depart",
+		a.yynum AS "yynum",
+		a.type AS "type",
+		c.compname AS "corpname",
+		a.fileormeno AS "fileormeno",
+		a.filename AS "filename",
+		a.fileid AS "fileid",
+		a.advice AS "advice",
+		a.mailcopier AS "mailcopier",
+		a.creator AS "creator",
+		a.creatdate AS "creatdate",
+		a.event AS "event",
+		b.proname AS "project",
+		f.flow_state AS "nextop",
+		a.nextoper AS "nextoper",
+		a.comeon AS "comeon",
+		a.appresult AS "appresult"
+	</sql>
+	
+	<sql id="oaYinzsqJoins">
+		left join bus_project b on a.project=b.projectid left join oa_money_company c on a.corpname=c.companyid
+	</sql>
+    
+    <sql id="oaYinzsqCheckJoins">
+    	left join bus_project b on a.project=b.projectid left join oa_money_company c on a.corpname=c.companyid left join oa_flow f on a.id=f.relation_id
+	</sql>
+    
+	<select id="get" resultType="OaYinzsq">
+		SELECT 
+			<include refid="oaYinzsqColumns"/>
+		FROM oa_yinzsq a
+		<include refid="oaYinzsqJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OaYinzsq">
+		SELECT 
+			<include refid="oaYinzsqColumns"/>
+		FROM oa_yinzsq a
+		<include refid="oaYinzsqJoins"/>
+		<where>
+			a.creator = #{currentUser.loginName}
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="appresult != null and appresult != ''">
+				AND a.appresult = #{appresult}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findCheckYinzList" resultType="OaYinzsq">
+		SELECT 
+			<include refid="oaYinzsqCheckColumns"/>
+		FROM oa_yinzsq a
+		<include refid="oaYinzsqCheckJoins"/>
+		<where>
+			f.operator = #{currentUser.loginName} and f.flow_type='yzsq' and (f.flow_state='authed' or f.flow_state='unauth' or f.flow_state='refuse')
+		</where>	
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OaYinzsq">
+		SELECT 
+			<include refid="oaYinzsqColumns"/>
+		FROM oa_yinzsq a
+		<include refid="oaYinzsqJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO oa_yinzsq(
+			id,
+			appname,
+			appdate,
+			depart,
+			yynum,
+			type,
+			corpname,
+			fileormeno,
+			filename,
+			fileid,
+			advice,
+			mailcopier,
+			creator,
+			creatdate,
+			event,
+			project,
+			nextop,
+			nextoper,
+			comeon,
+			appresult
+		) VALUES (
+			#{id},
+			#{appname},
+			#{appdate},
+			#{depart},
+			#{yynum},
+			#{type},
+			#{corpname},
+			#{fileormeno},
+			#{filename},
+			#{fileid},
+			#{advice},
+			#{mailcopier},
+			#{creator},
+			#{creatdate},
+			#{event},
+			#{project},
+			#{nextop},
+			#{nextoper},
+			#{comeon},
+			#{appresult}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE oa_yinzsq SET 	
+			appname = #{appname},
+			appdate = #{appdate},
+			depart = #{depart},
+			yynum = #{yynum},
+			type = #{type},
+			corpname = #{corpname},
+			fileormeno = #{fileormeno},
+			filename = #{filename},
+			fileid = #{fileid},
+			advice = #{advice},
+			mailcopier = #{mailcopier},
+			creator = #{creator},
+			creatdate = #{creatdate},
+			event = #{event},
+			project = #{project},
+			nextop = #{nextop},
+			nextoper = #{nextoper},
+			comeon = #{comeon},
+			appresult = #{appresult}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM oa_yinzsq
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

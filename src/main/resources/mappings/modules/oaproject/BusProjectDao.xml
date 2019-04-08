@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szcxsl.oa.modules.oaproject.dao.BusProjectDao">
+    
+	<sql id="busProjectColumns">
+		a.projectid AS "projectid",
+		a.proname AS "proname",
+		a.createtime AS "createtime",
+		a.creator AS "creator",
+		a.procomm AS "procomm",
+		a.customerid AS "customerid",
+		a.customer AS "customer",
+		a.customername AS "customername",
+		a.dealperson AS "dealperson",
+		a.dealname AS "dealname",
+		a.projectstate AS "projectstate",
+		a.pronum AS "pronum",
+		a.belfield AS "belfield"
+	</sql>
+	
+	<sql id="busProjectJoins">
+	</sql>
+    
+	<select id="get" resultType="BusProject">
+		SELECT 
+			<include refid="busProjectColumns"/>
+		FROM bus_project a
+		<include refid="busProjectJoins"/>
+		WHERE a.projectid = #{id}
+	</select>
+	
+	<select id="findList" resultType="BusProject">
+		SELECT 
+			<include refid="busProjectColumns"/>
+		FROM bus_project a
+		<include refid="busProjectJoins"/>
+		<where>
+			
+			<if test="proname != null and proname != ''">
+				AND a.proname LIKE 
+					<if test="dbName == 'oracle'">'%'||#{proname}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{proname}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{proname},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="BusProject">
+		SELECT 
+			<include refid="busProjectColumns"/>
+		FROM bus_project a
+		<include refid="busProjectJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO bus_project(
+			projectid,
+			proname,
+			createtime,
+			creator,
+			procomm,
+			customerid,
+			customer,
+			customername,
+			dealperson,
+			dealname,
+			projectstate,
+			pronum,
+			belfield
+		) VALUES (
+			#{projectid},
+			#{proname},
+			#{createtime},
+			#{creator},
+			#{procomm},
+			#{customerid},
+			#{customer},
+			#{customername},
+			#{dealperson},
+			#{dealname},
+			#{projectstate},
+			#{pronum},
+			#{belfield}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE bus_project SET 	
+			projectid = #{projectid},
+			proname = #{proname},
+			createtime = #{createtime},
+			creator = #{creator},
+			procomm = #{procomm},
+			customerid = #{customerid},
+			customer = #{customer},
+			customername = #{customername},
+			dealperson = #{dealperson},
+			dealname = #{dealname},
+			projectstate = #{projectstate},
+			pronum = #{pronum},
+			belfield = #{belfield}
+		WHERE projectid = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM bus_project
+		WHERE projectid = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szcxsl.oa.modules.oachedule.dao.oachedule.OaScheduleDao">
+    
+	<sql id="oaScheduleColumns">
+		a.schedule_id AS "scheduleId",
+		a.title AS "title",
+		a.notes AS "notes",
+		a.strattime AS "strattime",
+		a.endtime AS "endtime",
+		a.attachmentid AS "attachmentid",
+		a.eventid AS "eventid",
+		a.company_id AS "companyId",
+		a.creator AS "creator",
+		a.create_date AS "createDate",
+		a.updater AS "updater",
+		a.update_date AS "updateDate",
+		a.schedule_date AS "scheduleDate",
+		a.remindflag AS "remindflag",
+		a.remindtime AS "remindtime",
+		a.remindrate AS "remindrate",
+		a.remindnumeric AS "remindnumeric",
+		a.eventtype AS "eventtype",
+		a.finishstatus AS "finishstatus",
+		a.allactor AS "allactor",
+		a.allactorname AS "allactorname"
+	</sql>
+	
+	<sql id="oaScheduleForSelectColumns">
+		a.schedule_id AS "scheduleId",
+		a.title AS "title",
+		a.strattime AS "strattime",
+		a.endtime AS "endtime"
+	</sql>
+	
+	<sql id="oaScheduleJoins">
+	</sql>
+    
+	<select id="get" resultType="OaSchedule">
+		SELECT 
+			<include refid="oaScheduleColumns"/>
+		FROM oa_schedule a
+		<include refid="oaScheduleJoins"/>
+		WHERE a.scheduleId = #{scheduleId}
+	</select>
+	
+	<select id="findList" resultType="OaSchedule">
+		SELECT 
+			<include refid="oaScheduleColumns"/>
+		FROM oa_schedule a
+		<include refid="oaScheduleJoins"/>
+		<where>
+			
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+			<if test="beginStrattime != null and endStrattime != null and beginStrattime != '' and endStrattime != ''">
+				AND a.strattime BETWEEN #{beginStrattime} AND #{endStrattime}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findListforSelect" resultType="OaSchedule">
+		SELECT 
+			<include refid="oaScheduleForSelectColumns"/>
+		FROM oa_schedule a
+		<include refid="oaScheduleJoins"/>
+		<where>
+			a.creator = #{currentUser.loginName}
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+			<if test="beginStrattime != null and endStrattime != null and beginStrattime != '' and endStrattime != ''">
+				AND a.strattime BETWEEN #{beginStrattime} AND #{endStrattime}
+			</if>
+		</where>
+			order by strattime desc
+	</select>
+	
+	<select id="findAllList" resultType="OaSchedule">
+		SELECT 
+			<include refid="oaScheduleColumns"/>
+		FROM oa_schedule a
+		<include refid="oaScheduleJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO oa_schedule(
+			schedule_id,
+			title,
+			notes,
+			strattime,
+			endtime,
+			attachmentid,
+			eventid,
+			company_id,
+			creator,
+			create_date,
+			updater,
+			update_date,
+			schedule_date,
+			remindflag,
+			remindtime,
+			remindrate,
+			remindnumeric,
+			eventtype,
+			finishstatus,
+			allactor,
+			allactorname
+		) VALUES (
+			#{scheduleId},
+			#{title},
+			#{notes},
+			#{strattime},
+			#{endtime},
+			#{attachmentid},
+			#{eventid},
+			#{companyId},
+			#{creator},
+			#{createDate},
+			#{updater},
+			#{updateDate},
+			#{scheduleDate},
+			#{remindflag},
+			#{remindtime},
+			#{remindrate},
+			#{remindnumeric},
+			#{eventtype},
+			#{finishstatus},
+			#{allactor},
+			#{allactorname}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE oa_schedule SET 	
+			schedule_id = #{scheduleId},
+			title = #{title},
+			notes = #{notes},
+			strattime = #{strattime},
+			endtime = #{endtime},
+			attachmentid = #{attachmentid},
+			eventid = #{eventid},
+			company_id = #{companyId},
+			creator = #{creator},
+			updater = #{updater},
+			update_date = #{updateDate},
+			schedule_date = #{scheduleDate},
+			remindflag = #{remindflag},
+			remindtime = #{remindtime},
+			remindrate = #{remindrate},
+			remindnumeric = #{remindnumeric},
+			eventtype = #{eventtype},
+			finishstatus = #{finishstatus},
+			allactor = #{allactor},
+			allactorname = #{allactorname}
+		WHERE scheduleId = #{scheduleId}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM oa_schedule
+		WHERE scheduleId = #{scheduleId}
+	</update>
+	
+</mapper>

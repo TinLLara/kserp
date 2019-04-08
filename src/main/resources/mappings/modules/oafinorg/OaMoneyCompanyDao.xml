@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szcxsl.oa.modules.oafinorg.dao.OaMoneyCompanyDao">
+    
+	<sql id="oaMoneyCompanyColumns">
+		a.companyid AS "companyid",
+		a.compname AS "compname",
+		a.nativename AS "nativename",
+		a.region AS "region"
+	</sql>
+	
+	<sql id="oaMoneyCompanyJoins">
+	</sql>
+    
+	<select id="get" resultType="OaMoneyCompany">
+		SELECT 
+			<include refid="oaMoneyCompanyColumns"/>
+		FROM oa_money_company a
+		<include refid="oaMoneyCompanyJoins"/>
+		WHERE a.companyid = #{companyid}
+	</select>
+	
+	<select id="findList" resultType="OaMoneyCompany">
+		SELECT 
+			<include refid="oaMoneyCompanyColumns"/>
+		FROM oa_money_company a
+		<include refid="oaMoneyCompanyJoins"/>
+		<where>
+			
+			<if test="compname != null and compname != ''">
+				AND a.compname LIKE 
+					<if test="dbName == 'oracle'">'%'||#{compname}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{compname}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{compname},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OaMoneyCompany">
+		SELECT 
+			<include refid="oaMoneyCompanyColumns"/>
+		FROM oa_money_company a
+		<include refid="oaMoneyCompanyJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findListforSelect" resultType="OaMoneyCompany">
+		SELECT 
+			<include refid="oaMoneyCompanyColumns"/>
+		FROM oa_money_company a
+		<include refid="oaMoneyCompanyJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO oa_money_company(
+			companyid,
+			compname,
+			nativename,
+			region
+		) VALUES (
+			#{companyid},
+			#{compname},
+			#{nativename},
+			#{region}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE oa_money_company SET 	
+			compname = #{compname},
+			nativename = #{nativename},
+			region = #{region}
+		WHERE companyid = #{companyid}
+	</update>
+	
+	<delete id="delete">
+		DELETE FROM oa_money_company
+		WHERE companyid = #{companyid}
+	</delete>
+	
+</mapper>

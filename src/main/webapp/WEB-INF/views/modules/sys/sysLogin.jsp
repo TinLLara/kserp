@@ -77,7 +77,7 @@
 		</table>
 	</form>
 	<div class="footer">
-		Copyright &copy; 2012-${fns:getConfig('copyrightYear')} <a href="http://www.kszhineng.cn" target="_blank">${fns:getConfig('productName')}</a> - Powered By <a href="http://www.kszhineng.cn" target="_blank">深圳控石智能系统有限公司</a>  
+		Copyright &copy; 2012-${fns:getConfig('copyrightYear')} <a href="http://www.kszhineng.cn" target="_blank">${fns:getConfig('productName')}</a> - Powered By <a href="http://www.kszhineng.cn" target="_blank">深圳创思路智能系统有限公司</a>
 	</div>
 	<script src="${ctxStatic}/flash/zoom.min.js" type="text/javascript"></script>
 </body>

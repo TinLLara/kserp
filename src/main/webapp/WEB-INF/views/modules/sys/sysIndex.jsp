@@ -222,7 +222,7 @@
 				</div>
 			</div>
 		    <div id="footer" class="row-fluid">
-	            Copyright &copy; 2012-${fns:getConfig('copyrightYear')} ${fns:getConfig('productName')} - Powered By <a href="http://www.kszhineng.cn" target="_blank">深圳控石智能系统有限公司</a> 
+	            Copyright &copy; 2012-${fns:getConfig('copyrightYear')} ${fns:getConfig('productName')} - Powered By <a href="http://www.kszhineng.cn" target="_blank">深圳创思路智能系统有限公司</a>
 			</div>
 		</div>
 	</div>
